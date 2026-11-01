@@ -26,6 +26,7 @@ const I18N = {
     contact_title: "Contact",
     contact_tell: "Pour un essai ou un échange.",
     contact_sheet_link: "Fiche contact complète",
+    manager_label: "Manager",
     cta_whatsapp: "Écrire sur WhatsApp", cta_mail: "Envoyer un e-mail",
     back_home: "Retour au site",
     foot_rights: "tous droits réservés",
@@ -43,6 +44,7 @@ const I18N = {
     contact_title: "Contact",
     contact_tell: "For a trial or a chat.",
     contact_sheet_link: "Full contact sheet",
+    manager_label: "Manager",
     cta_whatsapp: "Message on WhatsApp", cta_mail: "Send an e-mail",
     back_home: "Back to site",
     foot_rights: "all rights reserved",
@@ -250,6 +252,8 @@ function renderContact(P) {
   const section = document.querySelector(".contact");
   const tell = document.querySelector(".contact-tell");
   const number = document.getElementById("contactNumber");
+  const managerLine = document.getElementById("contactManager");
+  const emailLine = document.getElementById("contactEmail");
   const actions = document.getElementById("contactActions");
   const cta = document.getElementById("ctaWhats");
 
@@ -263,6 +267,43 @@ function renderContact(P) {
     if (wa) number.textContent = formatPhone(wa);
     else if (mail) number.textContent = mail;
     else number.textContent = DEBUG ? MISSING[LANG] : "";
+  }
+
+  if (managerLine) {
+    managerLine.replaceChildren();
+    if (manager) {
+      const label = document.createElement("span");
+      label.textContent = t("manager_label");
+      managerLine.append(label, document.createTextNode(manager));
+      managerLine.hidden = false;
+    } else if (DEBUG) {
+      const label = document.createElement("span");
+      label.textContent = t("manager_label");
+      managerLine.append(label, document.createTextNode(MISSING[LANG]));
+      managerLine.hidden = false;
+    } else {
+      managerLine.hidden = true;
+    }
+  }
+
+  if (emailLine) {
+    emailLine.replaceChildren();
+    if (mail) {
+      const label = document.createElement("span");
+      label.textContent = t("sheet_mail");
+      const a = document.createElement("a");
+      a.href = mailHref;
+      a.textContent = mail;
+      emailLine.append(label, a);
+      emailLine.hidden = false;
+    } else if (DEBUG) {
+      const label = document.createElement("span");
+      label.textContent = t("sheet_mail");
+      emailLine.append(label, document.createTextNode(MISSING[LANG]));
+      emailLine.hidden = false;
+    } else {
+      emailLine.hidden = true;
+    }
   }
 
   if (cta) {

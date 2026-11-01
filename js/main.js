@@ -280,7 +280,7 @@ function observeAll() {
       entries.forEach(e => {
         const v = e.target;
         if (e.isIntersecting) {
-          if (!v.src) v.src = v.dataset.src;
+          if (!v.src) { v.src = v.dataset.src; v.removeAttribute("data-src"); }
           v.play().catch(() => {
             v.addEventListener("loadedmetadata", () => { v.play().catch(() => {}); }, { once: true });
           });

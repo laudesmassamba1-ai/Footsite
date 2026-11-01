@@ -1,0 +1,63 @@
+{
+  "_lire": "Remplir les champs marqués \"À COMPLÉTER\". Laisser une valeur vide (\"\") affiche un tiret sur le site. Ne rien inventer.",
+  "name": "NKENZO Sterling",
+  "brand": "Eterling68",
+  "jersey_number": "68",
+  "social": {"lire": "Réseaux : à compléter quand fournis"},
+  "born": "2007",
+  "city": "À COMPLÉTER",
+  "nationality": "congolaise",
+  "position": "À COMPLÉTER",
+  "foot": "À COMPLÉTER",
+  "height": "À COMPLÉTER",
+  "club": "À COMPLÉTER",
+  "tagline_fr": "À COMPLÉTER — une phrase de lui, dans ses mots : ex. « … »",
+  "tagline_en": "À COMPLÉTER — a line in his own words, e.g. \"…\"",
+  "stats": {
+    "_lire": "Stats saison en cours. Une seule ligne par stat. Remplacer null par un nombre.",
+    "saison": "À COMPLÉTER",
+    "matchs": null,
+    "buts": null,
+    "passes": null
+  },
+  "palmares": [
+    { "annee": "À COMPLÉTER", "titre": "À COMPLÉTER" }
+  ],
+  "timeline": [
+    {
+      "annee": "2007",
+      "titre_fr": "Naissance — Congo",
+      "titre_en": "Born — Congo",
+      "texte_fr": "Le terrain, c'est celui qu'on choisit pas : la terre, la rue, le ballon.",
+      "texte_en": "The pitch is the one you're not allowed to choose: dirt, street, ball.",
+      "photo": "media/img/img_jongle_small.webp"
+    },
+    {
+      "annee": "À COMPLÉTER",
+      "titre_fr": "À COMPLÉTER — premier club, premier match…",
+      "titre_en": "À COMPLÉTER — first club, first match…",
+      "texte_fr": "À COMPLÉTER",
+      "texte_en": "À COMPLÉTER",
+      "photo": "media/img/img_assis_small.webp"
+    },
+    {
+      "annee": "À COMPLÉTER",
+      "titre_fr": "À COMPLÉTER",
+      "titre_en": "À COMPLÉTER",
+      "texte_fr": "À COMPLÉTER",
+      "texte_en": "À COMPLÉTER",
+      "photo": "media/img/img_rue_small.webp"
+    }
+  ],
+  "contact": {
+    "whatsapp": "+242057612645",
+    "email": "",
+    "instagram": ""
+  },
+  "galerie": [
+    { "src": "media/video/hero-street.mp4", "poster": "media/video/hero-street-poster.jpg", "label_fr": "La rue", "label_en": "The street", "duree": "10s" },
+    { "src": "media/video/clip-maillot.mp4", "poster": "media/video/clip-maillot-poster.jpg", "label_fr": "Maillot", "label_en": "Shirt", "duree": "6s" },
+    { "src": "media/video/clip-duel.mp4", "poster": "media/video/clip-duel-poster.jpg", "label_fr": "Duel", "label_en": "Duel", "duree": "7s" },
+    { "src": "media/video/clip-course.mp4", "poster": "media/video/clip-course-poster.jpg", "label_fr": "Course", "label_en": "Run", "duree": "6s" }
+  ]
+}

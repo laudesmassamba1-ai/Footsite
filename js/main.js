@@ -236,12 +236,14 @@ applyLang();
 --------------------------------------------------------- */
 const toss = document.getElementById("toss");
 if (toss) {
-  function kickoff() {
+    function kickoff() {
     if (toss.classList.contains("done") || toss.classList.contains("launching")) return;
     toss.classList.add("launching");
     setTimeout(() => {
       toss.classList.add("done");
       document.body.classList.add("kickoff"); // la ligne médiane se trace
+      const hv = document.getElementById("heroVideo");
+      if (hv) hv.play().catch(() => {});
     }, REDUCED ? 0 : 700);
   }
   document.getElementById("tossBtn").addEventListener("click", kickoff);
@@ -279,7 +281,9 @@ function observeAll() {
         const v = e.target;
         if (e.isIntersecting) {
           if (!v.src) v.src = v.dataset.src;
-          const p = v.play(); if (p && p.catch) p.catch(() => {});
+          v.play().catch(() => {
+            v.addEventListener("loadedmetadata", () => { v.play().catch(() => {}); }, { once: true });
+          });
         } else if (!v.paused) {
           v.pause(); // économie batterie : hors cadre = pas de décode
         }

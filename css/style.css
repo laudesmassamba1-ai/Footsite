@@ -442,6 +442,10 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
   .card-num{ font-size:38vw; }
   .hero-meta{ display:none; }
   .sec-head{ flex-direction:column; align-items:flex-start; }
+  /* padding réduit sur mobile pour gagner de l'espace vertical */
+  section{ padding-top:clamp(40px,8vh,90px); padding-bottom:clamp(40px,8vh,90px); }
+  /* logo réduit pour éviter tout débordement sur très petit écran */
+  .logo{ font-size:min(1rem,8vw); }
 }
 @media (max-width:560px){
   .film{ gap:6px; }
@@ -449,6 +453,9 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
   .pitch-steps li{ grid-template-columns:auto; }
   .step-visual{ width:100%; aspect-ratio:16/10; }
   #matchMinute{ left:10px; bottom:10px; }
+  /* sur très petit mobile, une seule colonne de films */
+  .film{ grid-template-columns:1fr; }
+  .sticky-cta{ font-size:.68rem; padding:12px 18px; }
 }
 
 /* curseur réel = jamais le point custom sur tactile/pointeur grossier */

@@ -10,74 +10,106 @@
 "use strict";
 
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FINE_POINTER = window.matchMedia("(pointer: fine)").matches;
+const PARAMS = new URLSearchParams(location.search);
+const DEBUG = PARAMS.has("debug");
 
 /* ---------------------------------------------------------
    i18n
 --------------------------------------------------------- */
 const I18N = {
   fr: {
-    nav_action: "L'action", nav_profil: "Profil", nav_parcours: "Parcours", nav_contact: "Contact",
-    toss_kicker: "Eterling68 — Nkenzo Sterling",
-    toss_btn: "Pile ou face — coup d'envoi", toss_hint: "ou appuie sur entrée",
-    hero_kicker: "Né en 2007 — Congo",
-    hero_tag: "Le foot d'abord. La terre sous les crampons.",
-    hero_meta_poste: "Poste — [À COMPLÉTER]",
-    hero_scroll: "descendre",
-    action_title: "La pellicule",
-    action_sub: "ce que le terrain montre — rien d'autre",
-    action_note: "Pris à la main, sur terrain de terre. Pas de photo officielle — encore.",
-    card_tag: "CARTE DE JOUEUR — B.N.",
-    card_note: "La carte n'est pas remplie. Elle attend son club.",
-    season_head: "SAISON",
-    parcours_title: "Le terrain",
-    parcours_sub: "chaque ligne a été courue avant d'être tracée",
-    parcours_note: "Certaines cases sont vides. Ce n'est pas un manque : c'est une place pour écrire.",
-    contact_pre: "Feuille de match",
-    contact_l1: "Prochaine", contact_l2: "composition",
-    contact_tell: "La case n°11 est libre. Recruteurs, agents, clubs : c'est écrit noir sur blanc.",
-    cta_whatsapp: "ÉCRIRE SUR WHATSAPP", cta_mail: "ENVOYER UN MAIL",
-    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail",
-    sticky_cta: "CONTACT",
+    nav_action: "Vidéos", nav_profil: "Profil", nav_parcours: "Parcours", nav_contact: "Contact",
+    toss_btn: "Coup d'envoi",
+    action_title: "Vidéos",
+    parcours_title: "Parcours",
+    contact_title: "Contact",
+    contact_tell: "Pour un essai ou un échange.",
+    contact_sheet_link: "Fiche contact complète",
+    cta_whatsapp: "Écrire sur WhatsApp", cta_mail: "Envoyer un e-mail",
+    back_home: "Retour au site",
     foot_rights: "tous droits réservés",
-    foot_note: "Site en noir et blanc. Le club viendra apporter la couleur.",
-    stat_labels: { born: "Né", position: "Poste", foot: "Pied fort", height: "Taille", club: "Club" },
-    season_labels: { matchs: "Matchs", buts: "Buts", passes: "Passes D." }
+    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail",
+    stat_labels: {
+      position: "Poste", other_positions: "Autres postes", foot: "Pied fort",
+      nationality: "Nationalité", born: "Né en", height: "Taille", status: "Statut"
+    }
   },
   en: {
-    nav_action: "Action", nav_profil: "Profile", nav_parcours: "The road", nav_contact: "Contact",
-    toss_kicker: "Eterling68 — Nkenzo Sterling",
-    toss_btn: "Coin toss — kick-off", toss_hint: "or press enter",
-    hero_kicker: "Born 2007 — Congo",
-    hero_tag: "Ball first. Dirt under the boots.",
-    hero_meta_poste: "Position — [TO FILL]",
-    hero_scroll: "scroll down",
-    action_title: "The contact sheet",
-    action_sub: "what the pitch shows — nothing else",
-    action_note: "Shot by hand, on a dirt pitch. No official photo — yet.",
-    card_tag: "PLAYER CARD — B&W",
-    card_note: "The card isn't filled in. It's waiting for its club.",
-    season_head: "SEASON",
-    parcours_title: "The pitch",
-    parcours_sub: "every line was run before it was drawn",
-    parcours_note: "Some boxes are blank. Not a gap — a place to write.",
-    contact_pre: "Match sheet",
-    contact_l1: "Next", contact_l2: "line-up",
-    contact_tell: "The number 11 spot is open. Scouts, agents, clubs: it's written in black and white.",
-    cta_whatsapp: "MESSAGE ON WHATSAPP", cta_mail: "SEND AN E-MAIL",
-    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail",
-    sticky_cta: "CONTACT",
+    nav_action: "Videos", nav_profil: "Profile", nav_parcours: "Background", nav_contact: "Contact",
+    toss_btn: "Kick-off",
+    action_title: "Videos",
+    parcours_title: "Background",
+    contact_title: "Contact",
+    contact_tell: "For a trial or a chat.",
+    contact_sheet_link: "Full contact sheet",
+    cta_whatsapp: "Message on WhatsApp", cta_mail: "Send an e-mail",
+    back_home: "Back to site",
     foot_rights: "all rights reserved",
-    foot_note: "This site is black and white. The club will bring the colour.",
-    stat_labels: { born: "Born", position: "Position", foot: "Strong foot", height: "Height", club: "Club" },
-    season_labels: { matchs: "Apps", buts: "Goals", passes: "Assists" }
+    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail",
+    stat_labels: {
+      position: "Position", other_positions: "Other positions", foot: "Strong foot",
+      nationality: "Nationality", born: "Born", height: "Height", status: "Status"
+    }
   }
 };
 
 let LANG = localStorage.getItem("e68-lang") || "fr";
+let PLAYER = null;
+let observers = [];
+
+const MISSING = { fr: "[À COMPLÉTER]", en: "[TO FILL]" };
 
 function t(key, sub) {
   const d = I18N[LANG] || I18N.fr;
   return (sub ? (d[key] && d[key][sub]) : d[key]) || "";
+}
+
+function pick(v) {
+  if (v && typeof v === "object" && !Array.isArray(v)) {
+    return v[LANG] ?? v.fr ?? v.en ?? "";
+  }
+  return v;
+}
+
+function val(v) {
+  const x = pick(v);
+  if (Array.isArray(x)) return x.length ? x : null;
+  if (typeof x === "string") {
+    const s = x.trim();
+    if (!s || s === "À COMPLÉTER" || s === "[À COMPLÉTER]" || s === "[TO FILL]") return null;
+    return s;
+  }
+  return x || null;
+}
+
+function display(v) {
+  const x = val(v);
+  if (Array.isArray(x)) return x.join(", ");
+  return x || "";
+}
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+}
+
+function formatDuration(v) {
+  if (v == null || v === "") return "";
+  const n = Number(v);
+  if (!isFinite(n) || n <= 0) return String(v);
+  const s = (Math.round(n * 10) / 10).toFixed(1).replace(/\.0$/, "").replace(".", LANG === "en" ? "." : ",");
+  return `${s} s`;
+}
+
+function formatPhone(v) {
+  if (!v) return "";
+  const d = String(v).replace(/[^\d+]/g, "");
+  if (d.startsWith("+242") && d.length === 13) {
+    return `+242 ${d.slice(4, 7)} ${d.slice(7, 10)} ${d.slice(10)}`;
+  }
+  return String(v);
 }
 
 function applyLang() {
@@ -94,127 +126,189 @@ function applyLang() {
 /* ---------------------------------------------------------
    Chargement des données du joueur
 --------------------------------------------------------- */
-const MISSING = { fr: "[À COMPLÉTER]", en: "[TO FILL]" };
-
-function val(v) { return (v && v !== "À COMPLÉTER" && v !== "") ? v : null; }
-
 fetch("data/player.json")
   .then(r => r.json())
   .then(P => initPlayer(P))
   .catch(err => console.warn("player.json indisponible :", err));
 
-let PLAYER = null;
-
 function initPlayer(P) {
   PLAYER = P;
+  renderProfile(P);
+  renderParcours(P);
+  renderGalerie(P);
+  renderContact(P);
+  observeAll();
+}
 
-  // Hero : phrase du joueur si elle existe (guard pour sous-pages)
-  const tag = val(P.tagline_fr) && LANG === "fr" ? P.tagline_fr
-            : val(P.tagline_en) && LANG === "en" ? P.tagline_en : null;
-  const heroTag = document.getElementById("heroTag");
-  if (tag && heroTag && !tag.includes("À COMPLÉTER")) heroTag.textContent = `« ${tag} »`;
-
-  // Carte de scouting : photo reste, données injectées
-  const rows = [
-    ["born", P.born], ["position", val(P.position)], ["foot", val(P.foot)],
-    ["height", val(P.height)], ["club", val(P.club)]
-  ];
+/* Profil : seules les données présentes sont affichées. */
+function renderProfile(P) {
   const list = document.getElementById("statList");
-  if (list) {
+  if (!list) return;
+
+  const rows = [
+    ["position", P.position],
+    ["other_positions", P.other_positions],
+    ["foot", P.foot],
+    ["nationality", P.nationality],
+    ["born", P.born],
+    ["height", P.height],
+    ["status", P.status]
+  ];
+
   list.innerHTML = "";
-  rows.forEach(([k, v]) => {
+  rows.forEach(([key, raw]) => {
+    const value = display(raw);
+    if (!value && !DEBUG) return;
     const row = document.createElement("div");
     const dt = document.createElement("dt");
     const dd = document.createElement("dd");
-    dt.textContent = t("stat_labels")[k] || k;
-    dd.textContent = v || MISSING[LANG];
-    if (!v) dd.classList.add("missing");
+    dt.textContent = t("stat_labels")[key] || key;
+    dd.textContent = value || MISSING[LANG];
+    if (!value) dd.classList.add("missing");
     row.append(dt, dd);
     list.append(row);
   });
-  }
+}
 
-  // Saison
-  const season = document.getElementById("statSeason");
-  if (season) season.textContent = val(P.stats && P.stats.saison) || MISSING[LANG];
-  const grid = document.getElementById("seasonGrid");
-  if (grid) {
-  grid.innerHTML = "";
-  ["matchs", "buts", "passes"].forEach(k => {
-    const n = P.stats && typeof P.stats[k] === "number" ? P.stats[k] : null;
-    const box = document.createElement("div");
-    box.innerHTML = `<b ${n === null ? 'class="missing"' : ""}>${n === null ? "—" : n}</b><span>${t("season_labels")[k]}</span>`;
-    grid.append(box);
-  });
-  }
-
-  // Parcours
+/* Parcours : une seule mention factuelle. Les cases vides sont masquées. */
+function renderParcours(P) {
+  const section = document.getElementById("parcours");
   const steps = document.getElementById("pitchSteps");
-  if (steps) {
+  if (!steps) return;
+
+  const items = (P.parcours || []).map(ev => ({
+    annee: display(ev.annee),
+    titre: display({ fr: ev.titre_fr, en: ev.titre_en }),
+    texte: display({ fr: ev.texte_fr, en: ev.texte_en }),
+    photo: val(ev.photo)
+  })).filter(ev => ev.annee || ev.titre || ev.texte || ev.photo);
+
+  if (!items.length && !DEBUG) {
+    if (section) section.hidden = true;
+    return;
+  }
+
   steps.innerHTML = "";
-  (P.timeline || []).forEach(ev => {
-    const empty = val(ev.annee) === null;
+  items.forEach(ev => {
+    const year = ev.annee || (DEBUG ? MISSING[LANG] : "");
+    const title = ev.titre || (DEBUG ? MISSING[LANG] : "");
+    const text = ev.texte || (DEBUG ? MISSING[LANG] : "");
+    const img = ev.photo
+      ? `<img class="step-visual" src="${esc(ev.photo)}" alt="" loading="lazy" decoding="async">`
+      : "";
     const li = document.createElement("li");
-    const img = ev.photo && !empty
-      ? `<img class="step-visual" src="${ev.photo}" alt="" loading="lazy" decoding="async">` : "";
     li.innerHTML = `
       <div>
-        <span class="step-annee">${val(ev.annee) || MISSING[LANG]}</span>
-        <h3 class="step-head">${(LANG === "en" ? ev.titre_en : ev.titre_fr) || MISSING[LANG]}</h3>
-        <p class="step-text">${(LANG === "en" ? ev.texte_en : ev.texte_fr) || ""}</p>
+        ${year ? `<span class="step-annee">${esc(year)}</span>` : ""}
+        ${title ? `<h3 class="step-head">${esc(title)}</h3>` : ""}
+        ${text ? `<p class="step-text">${esc(text)}</p>` : ""}
       </div>
-      <div class="step-media">${img}</div>`;
+      ${img ? `<div class="step-media">${img}</div>` : ""}`;
     steps.append(li);
   });
+}
+
+/* Galerie vidéo : la légende dit ce que montre le clip. */
+function renderGalerie(P) {
+  const section = document.getElementById("action");
+  const film = document.getElementById("filmGrid");
+  if (!film) return;
+
+  const items = (P.galerie || []).filter(g => val(g.src));
+  if (!items.length && !DEBUG) {
+    if (section) section.hidden = true;
+    return;
   }
 
-  // Galerie vidéo (planche contact)
-  const film = document.getElementById("filmGrid");
-  if (film) {
   film.innerHTML = "";
-  (P.galerie || []).forEach((g, i) => {
+  items.forEach(g => {
+    const label = display({ fr: g.label_fr, en: g.label_en }) || (DEBUG ? MISSING[LANG] : "");
+    const duree = formatDuration(g.duree);
     const frame = document.createElement("figure");
     frame.className = "film-frame";
     frame.innerHTML = `
       <video muted playsinline loop preload="none"
-             data-src="${g.src}" poster="${g.poster}" aria-label="Extrait : ${LANG === "en" ? g.label_en : g.label_fr}"></video>
+             data-src="${esc(g.src)}" poster="${esc(g.poster || "")}"
+             aria-label="${esc((LANG === "en" ? "Video: " : "Vidéo : ") + label)}"></video>
       <figcaption class="film-cap">
-        <span>${(LANG === "en" ? g.label_en : g.label_fr)}</span><i></i>
+        <span>${esc(label)}</span><i></i>
       </figcaption>
-      <span class="film-no">SH.${String(i + 1).padStart(2, "0")}</span>`;
+      ${duree ? `<span class="film-no">${esc(duree)}</span>` : ""}`;
     film.append(frame);
   });
-  }
-
-  // Contact : liens uniquement si la donnée existe — on ne ment pas
-  const wa = val(P.contact && P.contact.whatsapp);
-  const mail = val(P.contact && P.contact.email);
-  const insta = val(P.contact && P.contact.instagram);
-  const waHref = wa ? `https://wa.me/${wa.replace(/[^\d]/g, "")}` : null;
-  const mailHref = mail && !mail.includes("À COMPLÉTER") ? `mailto:${mail}` : null;
-  setCTA("ctaWhats", waHref, mailHref);
-  setCTA("ctaMail", mailHref, waHref);
-  const sheetWa = document.getElementById("sheetWa");
-  const sheetMail = document.getElementById("sheetMail");
-  const sheetAgent = document.getElementById("sheetAgent");
-  if (sheetWa) sheetWa.textContent = wa || MISSING[LANG];
-  if (sheetMail) sheetMail.textContent = mail || MISSING[LANG];
-  if (sheetAgent) sheetAgent.textContent = insta || MISSING[LANG];
-
-  buildStats();
-  observeAll();
 }
 
-/* Libellés de la carte reconstruits avec la langue courante (sous-pages) */
-function buildStats() {}
+/* Contact : un seul bouton visible, construit depuis les données. */
+function renderContact(P) {
+  const c = P.contact || {};
+  const wa = val(c.whatsapp);
+  const mail = val(c.email);
+  const manager = val(c.manager);
+  const waHref = wa ? `https://wa.me/${wa.replace(/[^\d]/g, "")}` : null;
+  const mailHref = mail ? `mailto:${mail}` : null;
 
-function setCTA(primaryId, href, fallbackHref) {
-  const el = document.getElementById(primaryId);
-  if (href) { el.href = href; return; }
-  // si le contact principal n'est pas rempli : on ne ment pas,
-  // le lien mène simplement à la feuille de contact
-  el.href = "#contact";
-  el.classList.add("cta-empty");
+  const section = document.querySelector(".contact");
+  const tell = document.querySelector(".contact-tell");
+  const number = document.getElementById("contactNumber");
+  const actions = document.getElementById("contactActions");
+  const cta = document.getElementById("ctaWhats");
+
+  if (tell) {
+    if (wa || mail) tell.textContent = t("contact_tell");
+    else if (!DEBUG) { if (section) section.hidden = true; }
+    else tell.textContent = MISSING[LANG];
+  }
+
+  if (number) {
+    if (wa) number.textContent = formatPhone(wa);
+    else if (mail) number.textContent = mail;
+    else number.textContent = DEBUG ? MISSING[LANG] : "";
+  }
+
+  if (cta) {
+    if (waHref) {
+      cta.href = waHref;
+      cta.target = "_blank";
+      cta.rel = "noopener";
+      cta.dataset.i18n = "cta_whatsapp";
+      cta.textContent = t("cta_whatsapp");
+      cta.hidden = false;
+    } else if (mailHref) {
+      cta.href = mailHref;
+      cta.removeAttribute("target");
+      cta.removeAttribute("rel");
+      cta.dataset.i18n = "cta_mail";
+      cta.textContent = t("cta_mail");
+      cta.hidden = false;
+    } else {
+      cta.hidden = true;
+      if (actions) actions.hidden = !DEBUG;
+    }
+  }
+
+  const sheet = document.getElementById("contactSheet");
+  if (sheet) {
+    const rows = [
+      ["sheet_agent", manager],
+      ["sheet_wa", wa ? formatPhone(wa) : null],
+      ["sheet_mail", mail]
+    ];
+    sheet.innerHTML = "";
+    let shown = 0;
+    rows.forEach(([key, value]) => {
+      if (!value && !DEBUG) return;
+      const div = document.createElement("div");
+      const dt = document.createElement("dt");
+      const dd = document.createElement("dd");
+      dt.textContent = t(key);
+      dd.textContent = value || MISSING[LANG];
+      if (!value) dd.classList.add("missing");
+      div.append(dt, dd);
+      sheet.append(div);
+      shown++;
+    });
+    sheet.hidden = !shown;
+  }
 }
 
 /* ---------------------------------------------------------
@@ -228,7 +322,6 @@ if (langToggle) langToggle.addEventListener("click", () => {
   if (PLAYER) initPlayer(PLAYER); // reconstruit les blocs injectés
 });
 
-/* Application de la langue au chargement */
 applyLang();
 
 /* ---------------------------------------------------------
@@ -236,22 +329,33 @@ applyLang();
 --------------------------------------------------------- */
 const toss = document.getElementById("toss");
 if (toss) {
-    function kickoff() {
+  function kickoff() {
     if (toss.classList.contains("done") || toss.classList.contains("launching")) return;
     toss.classList.add("launching");
     setTimeout(() => {
       toss.classList.add("done");
-      document.body.classList.add("kickoff"); // la ligne médiane se trace
+      document.body.classList.add("kickoff");
       const hv = document.getElementById("heroVideo");
-      if (hv) hv.play().catch(() => {});
+      if (hv && !REDUCED) hv.play().catch(() => {});
     }, REDUCED ? 0 : 700);
   }
-  document.getElementById("tossBtn").addEventListener("click", kickoff);
-  window.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") kickoff(); });
-  const q = new URLSearchParams(location.search);
-  if (q.has("kick")) kickoff(); // porte de test
-  if (q.has("kick")) document.documentElement.style.scrollBehavior = "auto";
-  if (REDUCED) { toss.classList.add("done"); document.body.classList.add("kickoff"); }
+  const tossBtn = document.getElementById("tossBtn");
+  if (tossBtn) tossBtn.addEventListener("click", kickoff);
+  window.addEventListener("keydown", e => {
+    if (toss.classList.contains("done")) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      kickoff();
+    }
+  });
+  if (PARAMS.has("kick")) {
+    kickoff();
+    document.documentElement.style.scrollBehavior = "auto";
+  }
+  if (REDUCED) {
+    toss.classList.add("done");
+    document.body.classList.add("kickoff");
+  }
 }
 
 /* ---------------------------------------------------------
@@ -261,71 +365,79 @@ if (toss) {
    et jamais passé par l'IO est révélé directement. */
 function revealInView() {
   const vh = window.innerHeight;
-  document.querySelectorAll(".film-frame, .pitch-steps li").forEach(el => {
+  document.querySelectorAll(".film-frame, .pitch-steps li, .rvl").forEach(el => {
     const r = el.getBoundingClientRect();
     if (!el.classList.contains("seen") && r.top < vh && r.bottom > 0) el.classList.add("seen");
   });
 }
+
 function observeAll() {
-  // Révélations : actives seulement si IO réellement disponible.
+  observers.forEach(o => o.disconnect());
+  observers = [];
+
   const ioOK = typeof IntersectionObserver !== "undefined" && !REDUCED;
-  if (ioOK) document.documentElement.classList.add("js");
+  if (!ioOK) return;
 
-  if (ioOK) {
-    const once = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("seen"); once.unobserve(e.target); } });
-    }, { threshold: 0.18 });
+  document.documentElement.classList.add("js");
 
-    const lazyVid = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        const v = e.target;
-        if (e.isIntersecting) {
-          if (!v.src) { v.src = v.dataset.src; v.removeAttribute("data-src"); }
-          v.play().catch(() => {
-            v.addEventListener("loadedmetadata", () => { v.play().catch(() => {}); }, { once: true });
-          });
-        } else if (!v.paused) {
-          v.pause(); // économie batterie : hors cadre = pas de décode
+  const once = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("seen");
+        once.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.05 });
+
+  const lazyVid = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting) {
+        if (!v.src) {
+          v.src = v.dataset.src;
+          v.removeAttribute("data-src");
         }
-      });
-    }, { threshold: 0.25 });  document.querySelectorAll(".film-frame").forEach(f => once.observe(f));
+        v.play().catch(() => {
+          v.addEventListener("loadedmetadata", () => { v.play().catch(() => {}); }, { once: true });
+        });
+      } else if (!v.paused) {
+        v.pause(); // économie batterie : hors cadre = pas de décode
+      }
+    });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll(".film-frame").forEach(f => once.observe(f));
   document.querySelectorAll(".pitch-steps li").forEach(li => once.observe(li));
-  document.querySelectorAll(".rvl").forEach(f => once.observe(f)); // révélations génériques
+  document.querySelectorAll(".rvl").forEach(f => once.observe(f));
   document.querySelectorAll(".film-frame video").forEach(v => lazyVid.observe(v));
-  }
+
+  observers.push(once, lazyVid);
+}
+
+/* La vidéo du hero se met en pause dès qu'elle sort du cadre. */
+const heroVideo = document.getElementById("heroVideo");
+if (heroVideo && typeof IntersectionObserver !== "undefined") {
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        if (document.body.classList.contains("kickoff") && !REDUCED) heroVideo.play().catch(() => {});
+      } else if (!heroVideo.paused) {
+        heroVideo.pause();
+      }
+    });
+  }, { threshold: 0.15 }).observe(heroVideo);
 }
 
 /* Trace du terrain quand il entre dans le cadre */
 const pitch = document.querySelector(".pitch");
-if (pitch) {
+if (pitch && typeof IntersectionObserver !== "undefined") {
   new IntersectionObserver((entries, obs) => {
     entries.forEach(e => { if (e.isIntersecting) { pitch.classList.add("traced"); obs.disconnect(); } });
   }, { threshold: 0.35 }).observe(pitch);
 }
 
-/* ---------------------------------------------------------
-   Minute du match : la barre de scroll devient le chrono
---------------------------------------------------------- */
-const minute = document.getElementById("matchMinute");
-if (minute && !REDUCED) {
-  const setMinute = () => {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
-    minute.textContent = String(Math.round(p * 90)).padStart(2, "0") + "'";
-  };
-  let raf = 0;
-  window.addEventListener("scroll", () => {
-    if (raf) return;
-    raf = requestAnimationFrame(() => { setMinute(); raf = 0; });
-  }, { passive: true });
-  setMinute();
-}
-
-/* ---------------------------------------------------------
-   Curseur personnalisé : point + halo, quelques-aime aimant
-   sur les liens (desktop, jamais avec motion réduite)
---------------------------------------------------------- */
-if (matchMedia("(pointer:fine)").matches && !REDUCED) {
+/* Cursor : point + halo, only on fine pointers, never with reduced motion */
+if (FINE_POINTER && !REDUCED) {
   document.documentElement.classList.add("has-cursor");
   const dot = document.createElement("div");
   const ring = document.createElement("div");
@@ -340,15 +452,14 @@ if (matchMedia("(pointer:fine)").matches && !REDUCED) {
     ring.style.transform = `translate(${rx}px,${ry}px)`;
     requestAnimationFrame(loop);
   })();
-  // grandit sur les zones cliquables
   document.addEventListener("mouseover", e => {
     ring.classList.toggle("big", !!e.target.closest("a,button"));
   });
 }
 
 /* ---------------------------------------------------------
-   Lenis + GSAP/ScrollTrigger — uniquement si chargés
-   et si le mouvement est autorisé
+   Lenis + GSAP/ScrollTrigger — uniquement si chargés,
+   sur pointeur fin et si le mouvement est autorisé
 --------------------------------------------------------- */
 window.addEventListener("load", () => {
   const year = document.getElementById("year");
@@ -357,7 +468,7 @@ window.addEventListener("load", () => {
 
   if (REDUCED) return; // on respecte le réglage : pas de défilement piloté
 
-  if (window.Lenis) {
+  if (window.Lenis && FINE_POINTER) {
     const lenis = new Lenis({ lerp: 0.1 });
     document.documentElement.classList.add("has-lenis");
     lenis.on("scroll", () => window.ScrollTrigger && ScrollTrigger.update());
@@ -369,28 +480,14 @@ window.addEventListener("load", () => {
     gsap.registerPlugin(ScrollTrigger);
     // parallaxe légère du hero (seulement desktop : plus de surface à couvrir)
     if (matchMedia("(min-width:880px)").matches) {
-      // parallaxe du hero (le fond part plus vite que le nom)
       gsap.to(".hero-media video", {
         yPercent: 12, scale: 1.04, ease: "none",
         scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
       });
-      // le 68 géant flotte en fond de carte
       const num = document.querySelector(".card-num");
       if (num) gsap.to(num, {
         yPercent: 24, ease: "none",
         scrollTrigger: { trigger: ".scout-card", start: "top bottom", end: "bottom top", scrub: true }
-      });
-    }
-    // le marquee penche sous la vitesse du scroll, comme un ballon poussé
-    const marquee = document.querySelector(".marquee");
-    if (marquee && window.Lenis) {
-      let skewSetter = gsap.quickSetter(marquee, "skewY", "deg");
-      ScrollTrigger.create({
-        onUpdate: self => {
-          const v = gsap.utils.clamp(-4, 4, self.getVelocity() / -300);
-          skewSetter(v);
-          gsap.to(marquee, { skewY: 0, duration: .7, ease: "power3.out", overwrite: true, delay: .05 });
-        }
       });
     }
   }

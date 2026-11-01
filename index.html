@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eterling68 | NKENZO Sterling</title>
-  <meta name="description" content="Eterling68 — NKENZO Sterling. Né en 2007, Congo. Le foot d'abord, la terre sous les crampons. Page officielle pour recruteurs, agents et clubs.">
+  <meta name="description" content="NKENZO Sterling, milieu n°6, amateur sans club. Vidéos et contact WhatsApp.">
   <meta property="og:title" content="Eterling68 | NKENZO Sterling">
-  <meta property="og:description" content="Né en 2007. Le foot d'abord, la terre sous les crampons.">
+  <meta property="og:description" content="Milieu n°6, amateur sans club. Vidéos et contact WhatsApp.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content=""> <!-- À COMPLÉTER : URL du site en ligne -->
+  <meta property="og:url" content="">
   <meta property="og:image" content="media/img/og.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0a0a0a">
@@ -28,7 +28,7 @@
     "name": "NKENZO Sterling",
     "alternateName": "Eterling68",
     "birthDate": "2007",
-    "nationality": "Congo",
+    "nationality": "Congolaise",
     "jobTitle": "Footballer"
   }
   </script>
@@ -40,9 +40,9 @@
 
   <!-- ============ SYSTÈME/LANGUE ============ -->
   <header class="site-head">
-    <a class="logo" href="#top" aria-label="Eterling68 — retour en haut">ETERLING<b>68</b></a>
+    <a class="logo" href="#top" aria-label="Eterling68, retour en haut">ETERLING<b>68</b></a>
     <nav class="head-nav" aria-label="Navigation principale">
-      <a href="#action" data-i18n="nav_action">L'action</a>
+      <a href="#action" data-i18n="nav_action">Vidéos</a>
       <a href="#profil" data-i18n="nav_profil">Profil</a>
       <a href="#parcours" data-i18n="nav_parcours">Parcours</a>
       <a href="#contact" data-i18n="nav_contact">Contact</a>
@@ -53,14 +53,12 @@
   </header>
 
   <!-- ============ PRÉCHARGEUR : PILE OU FACE ============ -->
-  <div class="toss-layer" id="toss" role="dialog" aria-label="Introduction — pile ou face">
-    <p class="toss-kicker" data-i18n="toss_kicker">Lancement du ballon</p>
+  <div class="toss-layer" id="toss" role="dialog" aria-label="Introduction, pile ou face">
     <div class="coin" id="coin">
-      <span>P</span>
-      <span>F</span>
+      <span></span>
+      <span></span>
     </div>
-    <button class="toss-btn" id="tossBtn" type="button" data-i18n="toss_btn">Pile ou face — coup d'envoi</button>
-    <p class="toss-hint" data-i18n="toss_hint">ou appuie sur entrée</p>
+    <button class="toss-btn" id="tossBtn" type="button" data-i18n="toss_btn">Coup d'envoi</button>
   </div>
 
   <main id="top">
@@ -68,7 +66,7 @@
     <!-- ============ HERO ============ -->
     <section class="hero">
       <div class="hero-media">
-        <video id="heroVideo" muted playsinline loop autoplay preload="auto"
+        <video id="heroVideo" muted playsinline loop preload="metadata"
                poster="media/video/hero-street-poster.jpg"
                src="media/video/hero-street.mp4" aria-hidden="true"></video>
       </div>
@@ -79,32 +77,19 @@
       </svg>
 
       <div class="hero-copy">
-        <p class="hero-kicker" data-i18n="hero_kicker">Né en 2007 — Congo</p>
         <h1 class="hero-name"><span class="cut">NKENZO</span><span class="cut cut2">STERLING</span></h1>
-        <p class="hero-tag" id="heroTag" data-i18n="hero_tag">Le foot d'abord. La terre sous les crampons.</p>
       </div>
       <div class="hero-meta">
-        <span>ETERLING68</span><i></i><span data-i18n="hero_meta_poste">Poste — [À COMPLÉTER]</span>
+        <span>ETERLING68</span>
       </div>
-      <a class="hero-scroll" href="#action" aria-label="Descendre vers l'action"><span data-i18n="hero_scroll">descendre</span></a>
     </section>
-
-    <!-- ============ MARQUEE (chiffre 68 géant + device du joueur) ============ -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span>68&nbsp;—&nbsp;LE BALLON DE LA RUE&nbsp;—&nbsp;68&nbsp;—&nbsp;TERRE &amp; ARGENT&nbsp;—&nbsp;68&nbsp;—&nbsp;</span>
-        <span>68&nbsp;—&nbsp;LE BALLON DE LA RUE&nbsp;—&nbsp;68&nbsp;—&nbsp;TERRE &amp; ARGENT&nbsp;—&nbsp;68&nbsp;—&nbsp;</span>
-      </div>
-    </div>
 
     <!-- ============ L'ACTION : PLANCHE CONTACT VIDÉO ============ -->
     <section class="action" id="action">
       <header class="sec-head">
-        <h2 class="sec-title"><span data-i18n="action_title">La pellicule</span><small data-i18n="action_sub">ce que le terrain montre — rien d'autre</small></h2>
-        <p class="sec-index">SH.01 — SH.04</p>
+        <h2 class="sec-title"><span data-i18n="action_title">Vidéos</span></h2>
       </header>
       <div class="film" id="filmGrid"><!-- clips injectés par main.js depuis player.json --></div>
-      <p class="film-note" data-i18n="action_note">Pris à la main, sur terrain de terre. Pas de photo officielle — encore.</p>
     </section>
 
     <!-- ============ PROFIL : CARTE DE SCOUTING ============ -->
@@ -115,70 +100,52 @@
           <img id="cardImg" src="media/img/img_sombre_small.webp"
                srcset="media/img/img_sombre_small.webp 560w, media/img/img_sombre_full.webp 960w"
                sizes="(min-width:900px) 40vw, 90vw"
-               alt="Portrait noir et blanc du joueur, lunettes noires, regard à contre-jour." loading="lazy" decoding="async">
-          <p class="card-tag" data-i18n="card_tag">CARTE DE JOUEUR — B.N.</p>
+               alt="Portrait en noir et blanc de NKENZO Sterling." loading="lazy" decoding="async">
         </div>
         <div class="card-data">
           <div class="card-top">
             <h2 class="card-name">NKENZO<br>STERLING</h2>
-            <p class="card-brand">« ETERLING68 »</p>
           </div>
           <dl class="stat-list" id="statList">
-            <!-- lignes injectées : NÉ / POSTE / PIED / TAILLE / CLUB -->
+            <!-- lignes injectées depuis player.json -->
           </dl>
-          <div class="card-season">
-            <p class="season-head" data-i18n="season_head">SAISON — <span id="statSeason">—</span></p>
-            <div class="season-grid" id="seasonGrid"></div>
-          </div>
         </div>
       </div>
-      <p class="card-note" data-i18n="card_note">La carte n'est pas remplie. Elle attend son club.</p>
     </section>
 
     <!-- ============ PARCOURS : LE TERRAIN QUI SE TRACE ============ -->
     <section class="parcours" id="parcours">
       <svg class="pitch" viewBox="0 0 700 1100" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
         <rect x="30" y="30" width="640" height="1040"/>
-        <line x1="280" y1="30" x2="280" y2="1070"/> <!-- colonne tactile -->
+        <line x1="280" y1="30" x2="280" y2="1070"/>
         <line x1="30" y1="550" x2="670" y2="550"/>
         <circle cx="350" cy="550" r="80"/>
       </svg>
       <header class="sec-head">
-        <h2 class="sec-title"><span data-i18n="parcours_title">Le terrain</span><small data-i18n="parcours_sub">chaque ligne a été courue avant d'être tracée</small></h2>
+        <h2 class="sec-title"><span data-i18n="parcours_title">Parcours</span></h2>
       </header>
       <ol class="pitch-steps" id="pitchSteps"><!-- étapes injectées --></ol>
-      <p class="parcours-note" data-i18n="parcours_note">Certaines cases sont vides. Ce n'est pas un manque : c'est une place pour écrire.</p>
     </section>
 
-    <!-- ============ CONTACT : FEUILLE DE COMPO ============ -->
+    <!-- ============ CONTACT ============ -->
     <section class="contact" id="contact">
-      <p class="contact-pre" data-i18n="contact_pre">Feuille de match</p>
-      <h2 class="contact-title"><span class="rvl" data-i18n="contact_l1">Prochaine</span><br><span class="cut rvl" data-i18n="contact_l2">composition</span></h2>
-      <p class="contact-tell" data-i18n="contact_tell">La case n°11 est libre. Recruteurs, agents, clubs : c'est écrit noir sur blanc.</p>
-      <div class="contact-actions">
-        <a class="cta contact-whatsapp" id="ctaWhats" href="#" target="_blank" rel="noopener" data-i18n="cta_whatsapp">ÉCRIRE SUR WHATSAPP</a>
-        <a class="cta contact-mail" id="ctaMail" href="#" data-i18n="cta_mail">ENVOYER UN MAIL</a>
-        <a class="cta cta-ghost" href="contact.html" data-i18n="cta_sheet">VOIR LA FEUILLE COMPLÈTE</a>
+      <h2 class="contact-title"><span class="rvl" data-i18n="contact_title">Contact</span></h2>
+      <p class="contact-tell" data-i18n="contact_tell">Pour un essai ou un échange.</p>
+      <p class="contact-number" id="contactNumber"></p>
+      <div class="contact-actions" id="contactActions">
+        <a class="cta contact-whatsapp" id="ctaWhats" href="https://wa.me/242057612645" target="_blank" rel="noopener" data-i18n="cta_whatsapp">Écrire sur WhatsApp</a>
       </div>
-      <dl class="team-sheet" id="teamSheet">
-        <div><dt data-i18n="sheet_agent">Agent / manager</dt><dd id="sheetAgent">[À COMPLÉTER]</dd></div>
-        <div><dt data-i18n="sheet_wa">WhatsApp</dt><dd id="sheetWa">[À COMPLÉTER]</dd></div>
-        <div><dt data-i18n="sheet_mail">E-mail</dt><dd id="sheetMail">[À COMPLÉTER]</dd></div>
-      </dl>
+      <p class="contact-more"><a href="contact.html" data-i18n="contact_sheet_link">Fiche contact complète</a></p>
     </section>
 
     <footer class="site-foot">
-      <p>ETERLING68 — © <span id="year">2026</span> <span data-i18n="foot_rights">tous droits réservés</span></p>
-      <p class="foot-note" data-i18n="foot_note">Site en noir et blanc. Le club viendra apporter la couleur.</p>
+      <p class="foot-name">NKENZO Sterling</p>
+      <p>ETERLING68 · © <span id="year">2026</span> <span data-i18n="foot_rights">tous droits réservés</span></p>
     </footer>
 
   </main>
 
-  <!-- ============ CTA COLLANT + MINUTE DU MATCH ============ -->
-  <a class="sticky-cta" href="contact.html" aria-label="Contacter — recruteurs, agents" data-i18n="sticky_cta">CONTACT</a>
-  <div id="matchMinute" aria-hidden="true">00'</div>
-
-  <!-- Libs motion (CDN) : GSAP + ScrollTrigger + Lenis. Le site reste lisible et navigable sans. -->
+  <!-- ============ Libs motion (CDN) : GSAP + ScrollTrigger + Lenis. Le site reste lisible et navigable sans. ============ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js" defer></script>

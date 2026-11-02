@@ -20,7 +20,7 @@ const DEBUG = PARAMS.has("debug");
 const I18N = {
   fr: {
     nav_action: "Vidéos", nav_profil: "Profil", nav_parcours: "Parcours", nav_contact: "Contact",
-    toss_btn: "Coup d'envoi",
+    toss_btn: "Coup d'envoi", toss_hint: "ou fais défiler",
     action_title: "Vidéos",
     parcours_title: "Parcours",
     contact_title: "Contact",
@@ -38,7 +38,7 @@ const I18N = {
   },
   en: {
     nav_action: "Videos", nav_profil: "Profile", nav_parcours: "Background", nav_contact: "Contact",
-    toss_btn: "Kick-off",
+    toss_btn: "Kick-off", toss_hint: "or scroll",
     action_title: "Videos",
     parcours_title: "Background",
     contact_title: "Contact",
@@ -103,6 +103,16 @@ function formatDuration(v) {
   if (!isFinite(n) || n <= 0) return String(v);
   const s = (Math.round(n * 10) / 10).toFixed(1).replace(/\.0$/, "").replace(".", LANG === "en" ? "." : ",");
   return `${s} s`;
+}
+
+function playMuted(v) {
+  if (!v) return;
+  v.muted = true;
+  v.playsInline = true;
+  const p = v.play();
+  if (p && p.catch) p.catch(() => {
+    v.addEventListener("canplay", () => { v.play().catch(() => {}); }, { once: true });
+  });
 }
 
 function formatPhone(v) {
@@ -223,15 +233,19 @@ function renderGalerie(P) {
   }
 
   film.innerHTML = "";
+  const playLabel = LANG === "en" ? "Play video" : "Lire la vidéo";
   items.forEach(g => {
     const label = display({ fr: g.label_fr, en: g.label_en }) || (DEBUG ? MISSING[LANG] : "");
     const duree = formatDuration(g.duree);
     const frame = document.createElement("figure");
-    frame.className = "film-frame";
+    frame.className = "film-frame is-paused";
     frame.innerHTML = `
       <video muted playsinline loop preload="none"
              data-src="${esc(g.src)}" poster="${esc(g.poster || "")}"
              aria-label="${esc((LANG === "en" ? "Video: " : "Vidéo : ") + label)}"></video>
+      <button class="film-play" type="button" aria-label="${esc(playLabel)}" title="${esc(playLabel)}">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+      </button>
       <figcaption class="film-cap">
         <span>${esc(label)}</span><i></i>
       </figcaption>
@@ -407,18 +421,30 @@ if (toss) {
   function kickoff() {
     if (toss.classList.contains("done") || toss.classList.contains("launching")) return;
     toss.classList.add("launching");
+    removeEventListener("wheel", startOnScroll);
+    removeEventListener("touchmove", startOnScroll);
     setTimeout(() => {
       toss.classList.add("done");
       document.body.classList.add("kickoff");
       const hv = document.getElementById("heroVideo");
-      if (hv && !REDUCED) hv.play().catch(() => {});
+      if (hv && !REDUCED) playMuted(hv);
     }, REDUCED ? 0 : 700);
+  }
+  function startOnScroll(e) {
+    if (toss.classList.contains("done") || toss.classList.contains("launching")) return;
+    if (e.type === "wheel" && e.deltaY < 0) return;
+    kickoff();
   }
   const tossBtn = document.getElementById("tossBtn");
   if (tossBtn) tossBtn.addEventListener("click", kickoff);
+  toss.addEventListener("click", e => {
+    if (!e.target.closest("#tossBtn")) kickoff();
+  });
+  addEventListener("wheel", startOnScroll, { passive: true });
+  addEventListener("touchmove", startOnScroll, { passive: true });
   window.addEventListener("keydown", e => {
     if (toss.classList.contains("done")) return;
-    if (e.key === "Enter" || e.key === " ") {
+    if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown" || e.key === "PageDown") {
       e.preventDefault();
       kickoff();
     }
@@ -450,8 +476,50 @@ function observeAll() {
   observers.forEach(o => o.disconnect());
   observers = [];
 
-  const ioOK = typeof IntersectionObserver !== "undefined" && !REDUCED;
-  if (!ioOK) return;
+  const ioOK = typeof IntersectionObserver !== "undefined";
+
+  const lazyVid = ioOK ? new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting) {
+        if (!v.src && v.dataset.src) {
+          v.src = v.dataset.src;
+          v.removeAttribute("data-src");
+        }
+        if (!REDUCED) playMuted(v);
+      } else if (!v.paused) {
+        v.pause(); // économie batterie : hors cadre = pas de décode
+      }
+    });
+  }, { threshold: 0.05 }) : null;
+
+  document.querySelectorAll(".film-frame video").forEach(v => {
+    if (lazyVid) lazyVid.observe(v);
+    else if (!v.src && v.dataset.src) {
+      v.src = v.dataset.src;
+      v.removeAttribute("data-src");
+    }
+    const frame = v.closest(".film-frame");
+    if (!frame) return;
+    const sync = () => frame.classList.toggle("is-paused", v.paused);
+    v.addEventListener("play", sync);
+    v.addEventListener("pause", sync);
+    frame.addEventListener("click", () => {
+      if (v.paused) {
+        if (!v.src && v.dataset.src) {
+          v.src = v.dataset.src;
+          v.removeAttribute("data-src");
+        }
+        playMuted(v);
+      } else {
+        v.pause();
+      }
+    });
+    sync();
+  });
+
+  if (lazyVid) observers.push(lazyVid);
+  if (!ioOK || REDUCED) return;
 
   document.documentElement.classList.add("js");
 
@@ -464,29 +532,10 @@ function observeAll() {
     });
   }, { threshold: 0.05 });
 
-  const lazyVid = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      const v = e.target;
-      if (e.isIntersecting) {
-        if (!v.src) {
-          v.src = v.dataset.src;
-          v.removeAttribute("data-src");
-        }
-        v.play().catch(() => {
-          v.addEventListener("loadedmetadata", () => { v.play().catch(() => {}); }, { once: true });
-        });
-      } else if (!v.paused) {
-        v.pause(); // économie batterie : hors cadre = pas de décode
-      }
-    });
-  }, { threshold: 0.05 });
-
   document.querySelectorAll(".film-frame").forEach(f => once.observe(f));
   document.querySelectorAll(".pitch-steps li").forEach(li => once.observe(li));
   document.querySelectorAll(".rvl").forEach(f => once.observe(f));
-  document.querySelectorAll(".film-frame video").forEach(v => lazyVid.observe(v));
-
-  observers.push(once, lazyVid);
+  observers.push(once);
 }
 
 /* La vidéo du hero se met en pause dès qu'elle sort du cadre. */
@@ -536,16 +585,14 @@ if (FINE_POINTER && !REDUCED) {
    Lenis + GSAP/ScrollTrigger — uniquement si chargés,
    sur pointeur fin et si le mouvement est autorisé
 --------------------------------------------------------- */
-window.addEventListener("load", () => {
-  const year = document.getElementById("year");
-  if (year) year.textContent = new Date().getFullYear();
-  setTimeout(revealInView, 1500); // filet : jamais de contenu fantôme
+const year = document.getElementById("year");
+if (year) year.textContent = new Date().getFullYear();
+setTimeout(revealInView, 1500); // filet : jamais de contenu fantôme
 
-  if (REDUCED) return; // on respecte le réglage : pas de défilement piloté
-
+if (!REDUCED) { // on respecte le réglage : pas de défilement piloté
   if (window.Lenis && FINE_POINTER) {
-    const lenis = new Lenis({ lerp: 0.1 });
-    document.documentElement.classList.add("has-lenis");
+    const lenis = new Lenis({ lerp: 0.13, wheelMultiplier: 1.08 });
+    document.documentElement.classList.add("has-smooth");
     lenis.on("scroll", () => window.ScrollTrigger && ScrollTrigger.update());
     const raf = time => { lenis.raf(time); requestAnimationFrame(raf); };
     requestAnimationFrame(raf);
@@ -566,4 +613,4 @@ window.addEventListener("load", () => {
       });
     }
   }
-});
+}

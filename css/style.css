@@ -19,7 +19,7 @@ html{
   scroll-behavior:smooth;
   -webkit-text-size-adjust:100%;
 }
-html.has-lenis{ scroll-behavior:auto; } /* Lenis prend le relais */
+html.has-smooth{ scroll-behavior:auto; } /* Lenis prend le relais */
 
 body{
   background:var(--noir);
@@ -129,6 +129,9 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--blanc); outline-o
   border:1px solid var(--blanc); padding:14px 26px;
   transition:background .25s,color .25s;
 }
+.toss-hint{
+  font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gris);
+}
 
 /* =========================================================
    HERO — coin de rue en N&B, nom coupé par le cadre
@@ -223,7 +226,7 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
 .film-frame{
   position:relative; aspect-ratio:3/4.4; overflow:hidden;
   border:1px solid var(--ligne);
-  background:#141412;
+  background:#141412; cursor:pointer;
 }
 .film-frame video, .film-frame .f-poster{
   width:100%; height:100%; object-fit:cover;
@@ -249,6 +252,20 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
   letter-spacing:.08em; color:var(--blanc); opacity:.9;
   text-shadow:0 0 12px rgba(0,0,0,.85);
 }
+.film-play{
+  position:absolute; inset:0; z-index:3;
+  display:grid; place-items:center; width:100%; height:100%;
+  background:rgba(0,0,0,.2); color:var(--blanc);
+  opacity:0; visibility:hidden;
+  transition:opacity .25s, visibility .25s;
+}
+.film-play svg{
+  width:54px; height:54px;
+  filter:drop-shadow(0 0 18px rgba(0,0,0,.8));
+  transition:transform .25s;
+}
+.film-frame.is-paused .film-play{ opacity:1; visibility:visible; }
+.film-play:hover svg{ transform:scale(1.08); }
 
 /* révélation au scroll : la fenêtre s'ouvre depuis le bas (comme une machine
    de projection) — uniquement si JS + IntersectionObserver sont là */
@@ -398,7 +415,7 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
    ========================================================= */
 .has-cursor a, .has-cursor button, .has-cursor .film-frame{ cursor:none; }
 .cursor-dot, .cursor-ring{
-  position:fixed; top:0; left:0; z-index:90; pointer-events:none;
+  position:fixed; top:0; left:0; z-index:200; pointer-events:none;
   width:8px; height:8px; border-radius:50%;
   background:var(--blanc); mix-blend-mode:difference;
   margin:-4px 0 0 -4px;

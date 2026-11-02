@@ -27,10 +27,10 @@ const I18N = {
     contact_tell: "Pour un essai ou un échange.",
     contact_sheet_link: "Fiche contact complète",
     manager_label: "Manager",
-    cta_whatsapp: "Écrire sur WhatsApp", cta_mail: "Envoyer un e-mail",
+    cta_whatsapp: "Écrire sur WhatsApp",
     back_home: "Retour au site",
     foot_rights: "tous droits réservés",
-    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram",
+    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram", app_gmail: "Gmail",
     stat_labels: {
       position: "Poste", other_positions: "Autres postes", foot: "Pied fort",
       nationality: "Nationalité", born: "Né en", height: "Taille", status: "Statut"
@@ -45,10 +45,10 @@ const I18N = {
     contact_tell: "For a trial or a chat.",
     contact_sheet_link: "Full contact sheet",
     manager_label: "Manager",
-    cta_whatsapp: "Message on WhatsApp", cta_mail: "Send an e-mail",
+    cta_whatsapp: "Message on WhatsApp",
     back_home: "Back to site",
     foot_rights: "all rights reserved",
-    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram",
+    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram", app_gmail: "Gmail",
     stat_labels: {
       position: "Position", other_positions: "Other positions", foot: "Strong foot",
       nationality: "Nationality", born: "Born", height: "Height", status: "Status"
@@ -240,7 +240,13 @@ function renderGalerie(P) {
   });
 }
 
-/* Contact : un seul bouton visible, construit depuis les données. */
+/* Contact : icônes d'applications et fiche, construites depuis les données. */
+const ICONS = {
+  whatsapp: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>',
+  instagram: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>',
+  gmail: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>'
+};
+
 function renderContact(P) {
   const c = P.contact || {};
   const wa = val(c.whatsapp);
@@ -256,13 +262,10 @@ function renderContact(P) {
   const tell = document.querySelector(".contact-tell");
   const number = document.getElementById("contactNumber");
   const managerLine = document.getElementById("contactManager");
-  const emailLine = document.getElementById("contactEmail");
-  const instaLine = document.getElementById("contactInstagram");
   const actions = document.getElementById("contactActions");
-  const cta = document.getElementById("ctaWhats");
 
   if (tell) {
-    if (wa || mail) tell.textContent = t("contact_tell");
+    if (wa || mail || insta) tell.textContent = t("contact_tell");
     else if (!DEBUG) { if (section) section.hidden = true; }
     else tell.textContent = MISSING[LANG];
   }
@@ -290,90 +293,63 @@ function renderContact(P) {
     }
   }
 
-  if (emailLine) {
-    emailLine.replaceChildren();
-    if (mail) {
-      const label = document.createElement("span");
-      label.textContent = t("sheet_mail");
-      const a = document.createElement("a");
-      a.href = mailHref;
-      a.textContent = mail;
-      emailLine.append(label, a);
-      emailLine.hidden = false;
-    } else if (DEBUG) {
-      const label = document.createElement("span");
-      label.textContent = t("sheet_mail");
-      emailLine.append(label, document.createTextNode(MISSING[LANG]));
-      emailLine.hidden = false;
-    } else {
-      emailLine.hidden = true;
-    }
-  }
-
-  if (instaLine) {
-    instaLine.replaceChildren();
-    if (insta && instaHref) {
-      const label = document.createElement("span");
-      label.textContent = t("sheet_insta");
-      const a = document.createElement("a");
-      a.href = instaHref;
-      a.target = "_blank";
-      a.rel = "noopener";
-      a.textContent = `@${instaHandle}`;
-      instaLine.append(label, a);
-      instaLine.hidden = false;
-    } else if (DEBUG) {
-      const label = document.createElement("span");
-      label.textContent = t("sheet_insta");
-      instaLine.append(label, document.createTextNode(MISSING[LANG]));
-      instaLine.hidden = false;
-    } else {
-      instaLine.hidden = true;
-    }
-  }
-
-  if (cta) {
-    if (waHref) {
-      cta.href = waHref;
-      cta.target = "_blank";
-      cta.rel = "noopener";
-      cta.dataset.i18n = "cta_whatsapp";
-      cta.textContent = t("cta_whatsapp");
-      cta.hidden = false;
-    } else if (mailHref) {
-      cta.href = mailHref;
-      cta.removeAttribute("target");
-      cta.removeAttribute("rel");
-      cta.dataset.i18n = "cta_mail";
-      cta.textContent = t("cta_mail");
-      cta.hidden = false;
-    } else {
-      cta.hidden = true;
-      if (actions) actions.hidden = !DEBUG;
-    }
+  if (actions) {
+    const apps = [
+      {
+        label: t("sheet_wa"), href: waHref, icon: ICONS.whatsapp, external: true,
+        title: wa ? `${t("sheet_wa")} : ${formatPhone(wa)}` : null
+      },
+      {
+        label: t("sheet_insta"), href: instaHref, icon: ICONS.instagram, external: true,
+        title: insta ? `${t("sheet_insta")} : @${instaHandle}` : null
+      },
+      {
+        label: t("app_gmail"), href: mailHref, icon: ICONS.gmail, external: false,
+        title: mail ? `${t("app_gmail")} : ${mail}` : null
+      }
+    ];
+    actions.replaceChildren();
+    let shown = 0;
+    apps.forEach(app => {
+      if (!app.href && !DEBUG) return;
+      const el = document.createElement(app.href ? "a" : "span");
+      el.className = "app-link" + (app.href ? "" : " is-missing");
+      if (app.href) {
+        el.href = app.href;
+        if (app.external) { el.target = "_blank"; el.rel = "noopener"; }
+      } else {
+        el.setAttribute("aria-disabled", "true");
+      }
+      const label = app.title || `${app.label} ${MISSING[LANG]}`;
+      el.setAttribute("aria-label", label);
+      el.title = label;
+      el.innerHTML = `${app.icon}<span class="app-name">${esc(app.label)}</span>`;
+      actions.append(el);
+      shown++;
+    });
+    actions.hidden = !shown;
   }
 
   const sheet = document.getElementById("contactSheet");
   if (sheet) {
     const rows = [
-      ["sheet_agent", manager],
-      ["sheet_wa", wa ? formatPhone(wa) : null],
-      ["sheet_mail", mail],
-      ["sheet_insta", insta ? `@${instaHandle}` : null]
+      ["sheet_agent", manager, null],
+      ["sheet_wa", wa ? formatPhone(wa) : null, waHref],
+      ["sheet_mail", mail, mailHref],
+      ["sheet_insta", insta ? `@${instaHandle}` : null, instaHref]
     ];
     sheet.innerHTML = "";
     let shown = 0;
-    rows.forEach(([key, value]) => {
+    rows.forEach(([key, value, href]) => {
       if (!value && !DEBUG) return;
       const div = document.createElement("div");
       const dt = document.createElement("dt");
       const dd = document.createElement("dd");
       dt.textContent = t(key);
-      if (key === "sheet_insta" && value && instaHref) {
+      if (href && value) {
         const a = document.createElement("a");
-        a.href = instaHref;
-        a.target = "_blank";
-        a.rel = "noopener";
+        a.href = href;
+        if (key !== "sheet_mail") { a.target = "_blank"; a.rel = "noopener"; }
         a.textContent = value;
         dd.append(a);
       } else {
@@ -400,6 +376,28 @@ if (langToggle) langToggle.addEventListener("click", () => {
 });
 
 applyLang();
+
+/* ---------------------------------------------------------
+   Nom du hero : découpe en lettres (cascade du coup d'envoi).
+   Le <h1> garde son aria-label : les lettres sont décoratives.
+--------------------------------------------------------- */
+const heroName = document.querySelector(".hero-name");
+if (heroName) {
+  const cuts = [...heroName.querySelectorAll(".cut")];
+  const spoken = cuts.length ? cuts.map(el => el.textContent.trim()).join(" ") : heroName.textContent;
+  heroName.setAttribute("aria-label", spoken.replace(/\s+/g, " ").trim());
+  heroName.querySelectorAll(".cut").forEach(span => {
+    const txt = span.textContent;
+    span.textContent = "";
+    [...txt].forEach((ch, i) => {
+      const s = document.createElement("i");
+      s.setAttribute("aria-hidden", "true");
+      s.textContent = ch;
+      s.style.setProperty("--i", i);
+      span.append(s);
+    });
+  });
+}
 
 /* ---------------------------------------------------------
    Préchargeur — pile ou face

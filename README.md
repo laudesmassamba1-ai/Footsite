@@ -1,6 +1,6 @@
 # Eterling68 — site de NKENZO Sterling
 
-Site one-page en noir et blanc. Le contenu public vient de `data/player.json`.
+Site one-page en noir et blanc avec une fiche contact dédiée. Le contenu public vient de `data/player.json`.
 Le site est à la racine du dépôt (GitHub Pages).
 
 ## Modifier les textes et les données
@@ -16,6 +16,8 @@ Le site est à la racine du dépôt (GitHub Pages).
 - `born`, `nationality`, `position`, `other_positions`, `foot`, `height`, `status`
 - `parcours[]` : `annee`, `titre_fr`, `titre_en`, `texte_fr`, `texte_en`, `photo`
 - `contact` : `whatsapp`, `email`, `manager`, `instagram`
+  Les icônes WhatsApp, Instagram et Gmail sont construites depuis ces champs ;
+  un canal absent est masqué.
 - `galerie[]` : `src`, `poster`, `label_fr`, `label_en`
 
 ## Ajouter / remplacer une vidéo
@@ -37,4 +39,6 @@ puis référencer dans `parcours[].photo`.
 - Sur mobile : défilement natif (pas de Lenis), grain statique, vidéos en
   lecture paresseuse.
 - `prefers-reduced-motion` : grain, défilement piloté et tracés désactivés.
+- Section SIX : Three.js chargé seulement quand la section approche, rendu
+  arrêté hors écran, repli SVG si WebGL est absent ou si le mouvement est réduit.
 - Navigation clavier, contrastes élevés, textes alternatifs.

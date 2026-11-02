@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eterling68 | NKENZO Sterling</title>
-  <meta name="description" content="NKENZO Sterling, milieu n°6, amateur sans club. Vidéos et contact WhatsApp.">
+  <meta name="description" content="NKENZO Sterling, milieu n°6, amateur sans club. Vidéos et contact WhatsApp, Instagram, e-mail.">
   <meta property="og:title" content="Eterling68 | NKENZO Sterling">
-  <meta property="og:description" content="Milieu n°6, amateur sans club. Vidéos et contact WhatsApp.">
+  <meta property="og:description" content="Milieu n°6, amateur sans club. Vidéos et contact WhatsApp, Instagram, e-mail.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="media/img/og.jpg">
+  <meta property="og:url" content="https://laudesmassamba1-ai.github.io/Footsite/">
+  <meta property="og:image" content="https://laudesmassamba1-ai.github.io/Footsite/media/img/og.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0a0a0a">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23000'/><text x='16' y='24' font-family='Arial Black' font-size='18' fill='%23fff' text-anchor='middle'>68</text></svg>">
@@ -77,7 +77,7 @@
       </svg>
 
       <div class="hero-copy">
-        <h1 class="hero-name"><span class="cut">NKENZO</span><span class="cut cut2">STERLING</span></h1>
+        <h1 class="hero-name" aria-label="NKENZO STERLING"><span class="cut">NKENZO</span><span class="cut cut2">STERLING</span></h1>
       </div>
       <div class="hero-meta">
         <span>ETERLING68</span>
@@ -113,6 +113,17 @@
       </div>
     </section>
 
+    <!-- ============ SIX : RESPIRATION, LE NUMÉRO EN 3D ============ -->
+    <section class="six" id="six" aria-label="Numéro six, le poste principal du joueur">
+      <div class="six-halo" aria-hidden="true"></div>
+      <svg class="six-fallback" viewBox="-1.55 -2.7 3.5 6.2" aria-hidden="true">
+        <circle cx="0" cy="-0.62" r="1"/>
+        <circle cx="0" cy="-0.62" r="0.46"/>
+        <path d="M 1.163 0.991 A 1.3 1.3 0 0 1 0.580 2.408 L 0.382 2.084 A 0.92 0.92 0 0 0 0.794 1.081 Z"/>
+      </svg>
+      <canvas class="six-canvas" aria-hidden="true"></canvas>
+    </section>
+
     <!-- ============ PARCOURS : LE TERRAIN QUI SE TRACE ============ -->
     <section class="parcours" id="parcours">
       <svg class="pitch" viewBox="0 0 700 1100" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
@@ -133,10 +144,8 @@
       <p class="contact-tell" data-i18n="contact_tell">Pour un essai ou un échange.</p>
       <p class="contact-number" id="contactNumber"></p>
       <p class="contact-manager" id="contactManager"></p>
-      <p class="contact-email" id="contactEmail"></p>
-      <p class="contact-instagram" id="contactInstagram"></p>
       <div class="contact-actions" id="contactActions">
-        <a class="cta contact-whatsapp" id="ctaWhats" href="https://wa.me/242057612645" target="_blank" rel="noopener" data-i18n="cta_whatsapp">Écrire sur WhatsApp</a>
+        <a class="cta contact-whatsapp" href="https://wa.me/242057612645" target="_blank" rel="noopener" data-i18n="cta_whatsapp">Écrire sur WhatsApp</a>
       </div>
       <p class="contact-more"><a href="contact.html" data-i18n="contact_sheet_link">Fiche contact complète</a></p>
     </section>
@@ -157,12 +166,13 @@
     <style>
       .toss-layer{ display:none !important; }
       .kickoff-line line, .kickoff-line circle{ stroke-dashoffset:0; }
-      .hero-name .cut{ transform:none; }
+      .hero-name .cut i{ transform:none !important; }
       .js .film-frame, .js .pitch-steps li, .js .rvl{ opacity:1; transform:none; clip-path:none; }
       .film-frame video{ opacity:1; }
       .film-frame video[data-src]::after{ content:""; }
     </style>
   </noscript>
   <script src="js/main.js" defer></script>
+  <script src="js/scene-six.js" defer></script>
 </body>
 </html>

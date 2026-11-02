@@ -255,13 +255,15 @@ body.kickoff .kickoff-line line, body.kickoff .kickoff-line circle{ stroke-dasho
   transition:opacity 1s ease, transform 1s var(--ease-out);
 }
 .js .six.seen{ opacity:1; transform:none; }
-.six-canvas{ position:relative; width:min(80vw,600px); height:min(66vh,560px); display:block; }
+.six-canvas{ position:relative; z-index:0; width:min(80vw,600px); height:min(66vh,560px); display:block; }
 .six-fallback{
-  display:none; width:min(44vw,300px); opacity:.85;
-  stroke:var(--blanc); fill:none; stroke-width:.055;
+  display:block; position:absolute; z-index:1; top:50%; left:50%;
+  width:min(64vw,520px); opacity:.9;
+  color:var(--blanc); fill:currentColor; stroke:none;
+  transform:translate(-50%,-50%);
 }
+.six.has-webgl .six-fallback{ display:none; }
 .six.no-webgl .six-canvas{ display:none; }
-.six.no-webgl .six-fallback{ display:block; }
 
 /* =========================================================
    HERO — nom coupé par lettres (cascade du coup d'envoi)
@@ -607,6 +609,9 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
   .card-num{ font-size:38vw; }
   .sec-head{ flex-direction:column; align-items:flex-start; }
   .sec-head::after{ display:none; }
+  .six{ height:min(64vh,560px); min-height:300px; }
+  .six-canvas{ width:min(90vw,600px); height:min(54vh,440px); }
+  .six-fallback{ width:min(74vw,520px); }
   /* padding réduit sur mobile pour gagner de l'espace vertical */
   section{ padding-top:clamp(40px,8vh,90px); padding-bottom:clamp(40px,8vh,90px); }
   /* logo réduit pour éviter tout débordement sur très petit écran */

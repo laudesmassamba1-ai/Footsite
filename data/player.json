@@ -86,5 +86,9 @@
       "label_en": "Run",
       "duree": 6.4
     }
-  ]
+  ],
+  "education": {
+    "fr": "2e année à CFI-CIRAS, informatique — développeur",
+    "en": "2nd year at CFI-CIRAS, computer science — developer"
+  }
 }

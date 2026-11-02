@@ -36,7 +36,7 @@ const I18N = {
     sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram", app_gmail: "Gmail",
     stat_labels: {
       position: "Poste", other_positions: "Autres postes", foot: "Pied fort",
-      nationality: "Nationalité", born: "Né en", height: "Taille", city: "Ville", status: "Statut"
+      nationality: "Nationalité", born: "Né en", height: "Taille", city: "Ville", status: "Statut", education: "Études"
     }
   },
   en: {
@@ -57,7 +57,7 @@ const I18N = {
     sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram", app_gmail: "Gmail",
     stat_labels: {
       position: "Position", other_positions: "Other positions", foot: "Strong foot",
-      nationality: "Nationality", born: "Born", height: "Height", city: "City", status: "Status"
+      nationality: "Nationality", born: "Born", height: "Height", city: "City", status: "Status", education: "Studies"
     }
   }
 };
@@ -172,7 +172,8 @@ function renderProfile(P) {
     ["born", P.born],
     ["height", P.height],
     ["city", P.city],
-    ["status", P.status]
+    ["status", P.status],
+    ["education", P.education]
   ];
 
   list.innerHTML = "";

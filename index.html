@@ -55,8 +55,8 @@
   <!-- ============ PRÉCHARGEUR : PILE OU FACE ============ -->
   <div class="toss-layer" id="toss" role="dialog" aria-label="Introduction, pile ou face">
     <div class="coin" id="coin">
-      <span></span>
-      <span></span>
+      <span>68</span>
+      <span>68</span>
     </div>
     <button class="toss-btn" id="tossBtn" type="button" data-i18n="toss_btn">Coup d'envoi</button>
     <p class="toss-hint" data-i18n="toss_hint">ou fais défiler</p>
@@ -167,7 +167,7 @@
     <style>
       .toss-layer{ display:none !important; }
       .kickoff-line line, .kickoff-line circle{ stroke-dashoffset:0; }
-      .hero-name .cut i{ transform:none !important; }
+      .hero-name .cut i{ transform:none !important; opacity:1 !important; }
       .js .film-frame, .js .pitch-steps li, .js .rvl{ opacity:1; transform:none; clip-path:none; }
       .film-frame video{ opacity:1; }
       .film-frame video[data-src]::after{ content:""; }

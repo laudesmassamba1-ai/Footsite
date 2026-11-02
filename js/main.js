@@ -168,12 +168,13 @@ function renderProfile(P) {
   ];
 
   list.innerHTML = "";
-  rows.forEach(([key, raw]) => {
+  rows.forEach(([key, raw], i) => {
     const value = display(raw);
     if (!value && !DEBUG) return;
     const row = document.createElement("div");
     const dt = document.createElement("dt");
     const dd = document.createElement("dd");
+    row.style.setProperty("--i", i);
     dt.textContent = t("stat_labels")[key] || key;
     dd.textContent = value || MISSING[LANG];
     if (!value) dd.classList.add("missing");
@@ -201,7 +202,7 @@ function renderParcours(P) {
   }
 
   steps.innerHTML = "";
-  items.forEach(ev => {
+  items.forEach((ev, i) => {
     const year = ev.annee || (DEBUG ? MISSING[LANG] : "");
     const title = ev.titre || (DEBUG ? MISSING[LANG] : "");
     const text = ev.texte || (DEBUG ? MISSING[LANG] : "");
@@ -209,6 +210,7 @@ function renderParcours(P) {
       ? `<img class="step-visual" src="${esc(ev.photo)}" alt="" loading="lazy" decoding="async">`
       : "";
     const li = document.createElement("li");
+    li.style.setProperty("--i", i);
     li.innerHTML = `
       <div>
         ${year ? `<span class="step-annee">${esc(year)}</span>` : ""}
@@ -234,11 +236,12 @@ function renderGalerie(P) {
 
   film.innerHTML = "";
   const playLabel = LANG === "en" ? "Play video" : "Lire la vidéo";
-  items.forEach(g => {
+  items.forEach((g, i) => {
     const label = display({ fr: g.label_fr, en: g.label_en }) || (DEBUG ? MISSING[LANG] : "");
     const duree = formatDuration(g.duree);
     const frame = document.createElement("figure");
     frame.className = "film-frame is-paused";
+    frame.style.setProperty("--i", i);
     frame.innerHTML = `
       <video muted playsinline loop preload="none"
              data-src="${esc(g.src)}" poster="${esc(g.poster || "")}"
@@ -249,7 +252,8 @@ function renderGalerie(P) {
       <figcaption class="film-cap">
         <span>${esc(label)}</span><i></i>
       </figcaption>
-      ${duree ? `<span class="film-no">${esc(duree)}</span>` : ""}`;
+      ${duree ? `<span class="film-no">${esc(duree)}</span>` : ""}
+      <span class="film-progress" aria-hidden="true"><i></i></span>`;
     film.append(frame);
   });
 }
@@ -337,6 +341,7 @@ function renderContact(P) {
       const label = app.title || `${app.label} ${MISSING[LANG]}`;
       el.setAttribute("aria-label", label);
       el.title = label;
+      el.style.setProperty("--i", shown);
       el.innerHTML = `${app.icon}<span class="app-name">${esc(app.label)}</span>`;
       actions.append(el);
       shown++;
@@ -460,13 +465,59 @@ if (toss) {
 }
 
 /* ---------------------------------------------------------
+   Navigation : progression de lecture, en-tête discret,
+   section active dans le menu
+--------------------------------------------------------- */
+const head = document.querySelector(".site-head");
+let lastScroll = window.scrollY;
+
+function updateScrollUI() {
+  const y = window.scrollY;
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  document.documentElement.style.setProperty(
+    "--scroll-progress", max > 0 ? Math.min(1, Math.max(0, y / max)) : 0
+  );
+  if (head) {
+    if (y > 140 && y > lastScroll + 6) head.classList.add("is-hidden");
+    else if (y < lastScroll - 6 || y < 60) head.classList.remove("is-hidden");
+  }
+  lastScroll = y;
+}
+addEventListener("scroll", updateScrollUI, { passive: true });
+addEventListener("resize", updateScrollUI);
+updateScrollUI();
+
+const navLinks = [...document.querySelectorAll(".head-nav a")];
+if (navLinks.length && typeof IntersectionObserver !== "undefined") {
+  const navSections = navLinks
+    .map(a => {
+      const href = a.getAttribute("href");
+      return href && href.startsWith("#") ? document.querySelector(href) : null;
+    })
+    .filter(Boolean);
+
+  if (navSections.length) {
+    const navObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        const link = navLinks.find(a => a.getAttribute("href") === `#${e.target.id}`);
+        if (!link) return;
+        link.classList.toggle("is-active", e.isIntersecting);
+        if (e.isIntersecting) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    }, { rootMargin: "-42% 0px -52% 0px", threshold: 0 });
+    navSections.forEach(s => navObs.observe(s));
+  }
+}
+
+/* ---------------------------------------------------------
    Observateurs d'apparition + lecture paresseuse des vidéos
 --------------------------------------------------------- */
 /* Filet de sécurité : au chargement, tout ce qui est DÉJÀ à l'écran
    et jamais passé par l'IO est révélé directement. */
 function revealInView() {
   const vh = window.innerHeight;
-  document.querySelectorAll(".film-frame, .pitch-steps li, .rvl").forEach(el => {
+  document.querySelectorAll(".film-frame, .pitch-steps li, .rvl, .sec-head, .scout-card, .six, .contact-actions").forEach(el => {
     const r = el.getBoundingClientRect();
     if (!el.classList.contains("seen") && r.top < vh && r.bottom > 0) el.classList.add("seen");
   });
@@ -501,11 +552,19 @@ function observeAll() {
     }
     const frame = v.closest(".film-frame");
     if (!frame) return;
+    const bar = frame.querySelector(".film-progress i");
+    const updateProgress = () => {
+      if (!bar) return;
+      const d = v.duration;
+      bar.style.transform = `scaleX(${d && isFinite(d) ? Math.min(1, v.currentTime / d) : 0})`;
+    };
+    v.addEventListener("timeupdate", updateProgress);
+    v.addEventListener("loadedmetadata", updateProgress);
     let playing = false;
     const sync = () => frame.classList.toggle("is-paused", !playing);
     v.addEventListener("playing", () => { playing = true; sync(); });
     v.addEventListener("pause", () => { playing = false; sync(); });
-    v.addEventListener("ended", () => { playing = false; sync(); });
+    v.addEventListener("ended", () => { playing = false; sync(); updateProgress(); });
     frame.addEventListener("click", () => {
       if (playing) {
         v.pause();
@@ -534,9 +593,7 @@ function observeAll() {
     });
   }, { threshold: 0.05 });
 
-  document.querySelectorAll(".film-frame").forEach(f => once.observe(f));
-  document.querySelectorAll(".pitch-steps li").forEach(li => once.observe(li));
-  document.querySelectorAll(".rvl").forEach(f => once.observe(f));
+  document.querySelectorAll(".film-frame, .pitch-steps li, .rvl, .sec-head, .scout-card, .six, .contact-actions").forEach(el => once.observe(el));
   observers.push(once);
 }
 
@@ -606,6 +663,14 @@ if (!REDUCED) { // on respecte le réglage : pas de défilement piloté
     if (matchMedia("(min-width:880px)").matches) {
       gsap.to(".hero-media video", {
         yPercent: 12, scale: 1.04, ease: "none",
+        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+      });
+      gsap.to(".hero-copy", {
+        yPercent: -9, ease: "none",
+        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+      });
+      gsap.to(".hero-meta", {
+        y: -18, opacity: 0, ease: "none",
         scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
       });
       const num = document.querySelector(".card-num");

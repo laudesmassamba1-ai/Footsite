@@ -33,6 +33,13 @@ Le site est à la racine du dépôt (GitHub Pages).
 Convertir en gris : `convert IMG.JPG -colorspace Gray -strip -quality 82 media/img/nom.webp`
 puis référencer dans `parcours[].photo`.
 
+## Section anniversaire
+- La section `#anniversaire` apparaît uniquement le 2 novembre (date locale du
+  visiteur) et se masque au passage au 3.
+- Le jour et le mois sont réglés dans `js/main.js` ; l'année de naissance vient
+  de `data/player.json` (`born`) avec `data-birth-year` comme secours.
+- Sans JavaScript, la section reste masquée.
+
 ## Performance et accessibilité
 - Vidéos : boucles courtes, sans son, chargées seulement à l'entrée dans le
   cadre, mises en pause quand elles sortent de l'écran.

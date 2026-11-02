@@ -30,6 +30,9 @@ const I18N = {
     cta_whatsapp: "Écrire sur WhatsApp",
     back_home: "Retour au site",
     foot_rights: "tous droits réservés",
+    birthday_joyeux: "Joyeux", birthday_anniversaire: "anniversaire",
+    birthday_years: "ans", birthday_note: "Le n°6 fête son jour.",
+    birthday_cta: "Lui souhaiter",
     sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram", app_gmail: "Gmail",
     stat_labels: {
       position: "Poste", other_positions: "Autres postes", foot: "Pied fort",
@@ -48,6 +51,9 @@ const I18N = {
     cta_whatsapp: "Message on WhatsApp",
     back_home: "Back to site",
     foot_rights: "all rights reserved",
+    birthday_joyeux: "Happy", birthday_anniversaire: "birthday",
+    birthday_years: "years", birthday_note: "No. 6 celebrates his day.",
+    birthday_cta: "Send a wish",
     sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram", app_gmail: "Gmail",
     stat_labels: {
       position: "Position", other_positions: "Other positions", foot: "Strong foot",
@@ -150,6 +156,7 @@ function initPlayer(P) {
   renderGalerie(P);
   renderContact(P);
   observeAll();
+  updateBirthday();
 }
 
 /* Profil : seules les données présentes sont affichées. */
@@ -395,6 +402,77 @@ if (langToggle) langToggle.addEventListener("click", () => {
 });
 
 applyLang();
+
+/* ---------------------------------------------------------
+   Anniversaire : visible le 2 novembre (date locale du visiteur),
+   de 00:00 à 23:59, puis masqué au passage au 3.
+--------------------------------------------------------- */
+const birthday = document.querySelector(".birthday");
+const BIRTHDAY_MONTH = 10;
+const BIRTHDAY_DAY = 2;
+let birthdayTimer = 0;
+
+function isBirthday(d = new Date()) {
+  return d.getMonth() === BIRTHDAY_MONTH && d.getDate() === BIRTHDAY_DAY;
+}
+
+function birthdayAge(now = new Date()) {
+  const source = (PLAYER && PLAYER.born) || (birthday && birthday.dataset.birthYear);
+  const year = parseInt(source, 10);
+  return year && now.getFullYear() >= year ? now.getFullYear() - year : null;
+}
+
+function seedBirthdayConfetti() {
+  const box = birthday && birthday.querySelector(".bday-confetti");
+  if (!box || box.children.length) return;
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < 28; i++) {
+    const s = document.createElement("i");
+    s.style.setProperty("--x", `${Math.random() * 100}%`);
+    s.style.setProperty("--d", `${-Math.random() * 12}s`);
+    s.style.setProperty("--t", `${7 + Math.random() * 7}s`);
+    s.style.setProperty("--r", `${Math.random() * 360}deg`);
+    s.style.setProperty("--drift", `${-70 + Math.random() * 140}px`);
+    s.style.setProperty("--o", `${.16 + Math.random() * .54}`);
+    frag.append(s);
+  }
+  box.append(frag);
+}
+
+function updateBirthday() {
+  if (!birthday) return;
+  const now = new Date();
+  const live = isBirthday(now);
+  birthday.hidden = !live;
+  birthday.classList.toggle("is-live", live);
+  if (!live) return;
+  const age = birthdayAge(now);
+  const ageEl = document.getElementById("bdayAge");
+  if (ageEl && age != null) ageEl.textContent = age;
+  seedBirthdayConfetti();
+}
+
+function scheduleBirthday() {
+  if (!birthday) return;
+  clearTimeout(birthdayTimer);
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1, 0);
+  birthdayTimer = setTimeout(() => {
+    updateBirthday();
+    scheduleBirthday();
+  }, Math.max(1000, next - now));
+}
+
+if (birthday) {
+  updateBirthday();
+  scheduleBirthday();
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) return;
+    updateBirthday();
+    scheduleBirthday();
+  });
+  addEventListener("focus", () => { updateBirthday(); scheduleBirthday(); });
+}
 
 /* ---------------------------------------------------------
    Nom du hero : découpe en lettres (cascade du coup d'envoi).

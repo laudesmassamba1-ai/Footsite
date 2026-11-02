@@ -233,6 +233,106 @@ body.kickoff .kickoff-line line, body.kickoff .kickoff-line circle{ stroke-dasho
 }
 
 /* =========================================================
+   ANNIVERSAIRE — 02.11, visible uniquement le 2 novembre
+   ========================================================= */
+.birthday{
+  position:relative; isolation:isolate; overflow:hidden;
+  min-height:min(84vh,760px);
+  display:grid; place-items:center;
+  padding:clamp(74px,11vh,140px) var(--pad);
+  border-top:1px solid var(--ligne);
+  border-bottom:1px solid var(--ligne);
+  background:
+    radial-gradient(circle at 50% 8%, rgba(242,240,236,.12), transparent 48%),
+    linear-gradient(180deg, #0d0d0c, var(--noir) 55%);
+}
+.birthday[hidden]{ display:none; }
+.birthday::before{
+  content:""; position:absolute; inset:clamp(10px,2vw,24px); z-index:4;
+  border:1px solid rgba(242,240,236,.14); pointer-events:none;
+}
+.bday-light{
+  position:absolute; inset:-30% -10% auto; height:72%; z-index:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(242,240,236,.2), transparent 62%);
+  filter:blur(18px); opacity:.8; pointer-events:none;
+}
+.bday-date{
+  position:absolute; z-index:0; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-family:var(--font-display); font-weight:900; font-stretch:125%;
+  font-size:clamp(11rem,40vw,36rem); line-height:.72; letter-spacing:-.04em;
+  color:transparent; -webkit-text-stroke:1.5px rgba(242,240,236,.12);
+  white-space:nowrap; pointer-events:none; user-select:none;
+}
+.bday-confetti{ position:absolute; inset:0; z-index:1; overflow:hidden; pointer-events:none; }
+.bday-confetti i{
+  position:absolute; top:-15%; left:var(--x,50%);
+  width:var(--w,7px); height:var(--h,20px); border-radius:1px;
+  background:var(--blanc); opacity:var(--o,.7);
+  transform:translate3d(0,0,0) rotate(var(--r,0deg));
+  animation:bday-fall var(--t,10s) linear var(--d,0s) infinite;
+  will-change:transform;
+}
+.bday-confetti i:nth-child(3n){ width:6px; height:6px; border-radius:50%; opacity:.42; }
+.bday-confetti i:nth-child(4n){ background:var(--gris); }
+.bday-confetti i:nth-child(5n){ width:12px; height:10px; opacity:.3; }
+@keyframes bday-fall{
+  from{ transform:translate3d(0,0,0) rotate(var(--r,0deg)); }
+  to{ transform:translate3d(var(--drift,28px),118vh,0) rotate(calc(var(--r,0deg) + 540deg)); }
+}
+.bday-inner{
+  position:relative; z-index:2; width:min(100%,1240px); min-width:0;
+  display:grid; justify-items:center; gap:clamp(14px,2.4vh,26px);
+  text-align:center;
+}
+.bday-kicker{
+  display:flex; flex-wrap:wrap; justify-content:center; gap:8px 14px;
+  font-size:.68rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gris);
+}
+.bday-kicker span:nth-child(even){ opacity:.35; }
+.bday-title{ width:100%; font-size:clamp(1.7rem,8.6vw,7.5rem); line-height:.82; letter-spacing:-.02em; }
+.bday-title span{ display:block; }
+.bday-title span:last-child{ color:transparent; -webkit-text-stroke:1.2px var(--blanc); }
+.bday-name{
+  font-family:var(--font-display); font-weight:900; font-stretch:125%;
+  text-transform:uppercase; font-size:clamp(1.05rem,3vw,2rem); letter-spacing:.04em;
+}
+.bday-name b{ color:var(--gris); font-weight:900; }
+.bday-age{
+  display:flex; align-items:baseline; gap:10px;
+  font-size:.74rem; letter-spacing:.24em; text-transform:uppercase; color:var(--gris);
+}
+.bday-age strong{
+  font-family:var(--font-display); font-weight:900; font-stretch:125%;
+  font-size:clamp(2.8rem,7vw,5.6rem); line-height:.8; letter-spacing:-.02em;
+  color:var(--blanc);
+}
+.bday-note{
+  font-size:.74rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gris);
+}
+.bday-cta{
+  display:inline-flex; align-items:center; gap:14px; margin-top:clamp(6px,1vh,14px);
+  padding:14px 22px; border:1px solid var(--ligne);
+  font-size:.7rem; letter-spacing:.2em; text-transform:uppercase;
+  transition:background .3s,color .3s,border-color .3s;
+}
+.bday-cta span:last-child{ font-size:1rem; transition:transform .3s var(--ease-out); }
+.bday-cta:hover{ background:var(--blanc); color:var(--noir); border-color:var(--blanc); }
+.bday-cta:hover span:last-child{ transform:translate(3px,3px); }
+.birthday.is-live .bday-inner > *{
+  opacity:0; transform:translateY(18px);
+  animation:bday-rise .9s var(--ease-out) both;
+}
+.birthday.is-live .bday-inner > :nth-child(1){ animation-delay:.1s; }
+.birthday.is-live .bday-inner > :nth-child(2){ animation-delay:.18s; }
+.birthday.is-live .bday-inner > :nth-child(3){ animation-delay:.28s; }
+.birthday.is-live .bday-inner > :nth-child(4){ animation-delay:.37s; }
+.birthday.is-live .bday-inner > :nth-child(5){ animation-delay:.45s; }
+.birthday.is-live .bday-inner > :nth-child(6){ animation-delay:.55s; }
+@keyframes bday-rise{
+  to{ opacity:1; transform:none; }
+}
+
+/* =========================================================
    SIX — respiration : le numéro sous projecteurs (3D lazy)
    ========================================================= */
 .six{
@@ -612,6 +712,11 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
   .six{ height:min(64vh,560px); min-height:300px; }
   .six-canvas{ width:min(90vw,600px); height:min(54vh,440px); }
   .six-fallback{ width:min(74vw,520px); }
+  .birthday{ min-height:min(76vh,640px); padding-top:clamp(58px,9vh,100px); padding-bottom:clamp(58px,9vh,100px); }
+  .bday-date{ font-size:clamp(9rem,52vw,24rem); }
+  .bday-inner{ gap:clamp(10px,1.8vh,18px); }
+  .bday-title{ font-size:clamp(1.7rem,8.8vw,5rem); }
+  .bday-cta{ padding:12px 18px; }
   /* padding réduit sur mobile pour gagner de l'espace vertical */
   section{ padding-top:clamp(40px,8vh,90px); padding-bottom:clamp(40px,8vh,90px); }
   /* logo réduit pour éviter tout débordement sur très petit écran */
@@ -644,9 +749,12 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
   .kickoff-line line, .kickoff-line circle,
   .pitch rect, .pitch line, .pitch circle{ stroke-dashoffset:0; transition:none; }
   .film-frame, .pitch-steps li, .rvl, .hero-name .cut, .hero-name .cut i,
-  .sec-head, .scout-card, .six, .stat-list > div, .contact-actions .app-link{
+  .sec-head, .scout-card, .six, .stat-list > div, .contact-actions .app-link,
+  .birthday.is-live .bday-inner > *{
     opacity:1; transform:none; clip-path:none; transition:none;
+    animation:none;
   }
+  .bday-confetti{ display:none; }
   .film-frame video, .scout-card:hover .card-photo img,
   .film-frame:hover video{ transform:none; }
   .film-progress i, .app-link svg, .film-cap i, .logo b{ transition:none; }

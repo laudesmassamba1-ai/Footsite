@@ -30,13 +30,19 @@
     "fr": "Droit",
     "en": "Right"
   },
-  "height": "",
+  "height": "1m70",
   "status": {
     "fr": "Amateur, sans club",
     "en": "Amateur, no club"
   },
-  "club": "",
-  "city": "",
+  "club": {
+    "fr": "",
+    "en": ""
+  },
+  "city": {
+    "fr": "Brazzaville",
+    "en": "Brazzaville"
+  },
   "social": {},
   "parcours": [
     {

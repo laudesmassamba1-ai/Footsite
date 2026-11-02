@@ -13,7 +13,7 @@ Le site est à la racine du dépôt (GitHub Pages).
 
 ### Champs principaux
 - `name`, `brand`, `jersey_number`
-- `born`, `nationality`, `position`, `other_positions`, `foot`, `height`, `status`
+- `born`, `nationality`, `position`, `other_positions`, `foot`, `height`, `city`, `status`
 - `parcours[]` : `annee`, `titre_fr`, `titre_en`, `texte_fr`, `texte_en`, `photo`
 - `contact` : `whatsapp`, `email`, `manager`, `instagram`
   Les icônes WhatsApp, Instagram et Gmail sont construites depuis ces champs ;

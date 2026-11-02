@@ -30,7 +30,7 @@ const I18N = {
     cta_whatsapp: "Écrire sur WhatsApp", cta_mail: "Envoyer un e-mail",
     back_home: "Retour au site",
     foot_rights: "tous droits réservés",
-    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail",
+    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram",
     stat_labels: {
       position: "Poste", other_positions: "Autres postes", foot: "Pied fort",
       nationality: "Nationalité", born: "Né en", height: "Taille", status: "Statut"
@@ -48,7 +48,7 @@ const I18N = {
     cta_whatsapp: "Message on WhatsApp", cta_mail: "Send an e-mail",
     back_home: "Back to site",
     foot_rights: "all rights reserved",
-    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail",
+    sheet_agent: "Agent / manager", sheet_wa: "WhatsApp", sheet_mail: "E-mail", sheet_insta: "Instagram",
     stat_labels: {
       position: "Position", other_positions: "Other positions", foot: "Strong foot",
       nationality: "Nationality", born: "Born", height: "Height", status: "Status"
@@ -246,14 +246,18 @@ function renderContact(P) {
   const wa = val(c.whatsapp);
   const mail = val(c.email);
   const manager = val(c.manager);
+  const insta = val(c.instagram);
   const waHref = wa ? `https://wa.me/${wa.replace(/[^\d]/g, "")}` : null;
   const mailHref = mail ? `mailto:${mail}` : null;
+  const instaHandle = insta ? (insta.match(/instagram\.com\/([^/?#]+)/i)?.[1] || insta.replace(/^@/, "")) : null;
+  const instaHref = insta ? (/^https?:\/\//i.test(insta) ? insta : `https://instagram.com/${insta.replace(/^@/, "")}`) : null;
 
   const section = document.querySelector(".contact");
   const tell = document.querySelector(".contact-tell");
   const number = document.getElementById("contactNumber");
   const managerLine = document.getElementById("contactManager");
   const emailLine = document.getElementById("contactEmail");
+  const instaLine = document.getElementById("contactInstagram");
   const actions = document.getElementById("contactActions");
   const cta = document.getElementById("ctaWhats");
 
@@ -306,6 +310,28 @@ function renderContact(P) {
     }
   }
 
+  if (instaLine) {
+    instaLine.replaceChildren();
+    if (insta && instaHref) {
+      const label = document.createElement("span");
+      label.textContent = t("sheet_insta");
+      const a = document.createElement("a");
+      a.href = instaHref;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = `@${instaHandle}`;
+      instaLine.append(label, a);
+      instaLine.hidden = false;
+    } else if (DEBUG) {
+      const label = document.createElement("span");
+      label.textContent = t("sheet_insta");
+      instaLine.append(label, document.createTextNode(MISSING[LANG]));
+      instaLine.hidden = false;
+    } else {
+      instaLine.hidden = true;
+    }
+  }
+
   if (cta) {
     if (waHref) {
       cta.href = waHref;
@@ -332,7 +358,8 @@ function renderContact(P) {
     const rows = [
       ["sheet_agent", manager],
       ["sheet_wa", wa ? formatPhone(wa) : null],
-      ["sheet_mail", mail]
+      ["sheet_mail", mail],
+      ["sheet_insta", insta ? `@${instaHandle}` : null]
     ];
     sheet.innerHTML = "";
     let shown = 0;
@@ -342,7 +369,16 @@ function renderContact(P) {
       const dt = document.createElement("dt");
       const dd = document.createElement("dd");
       dt.textContent = t(key);
-      dd.textContent = value || MISSING[LANG];
+      if (key === "sheet_insta" && value && instaHref) {
+        const a = document.createElement("a");
+        a.href = instaHref;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = value;
+        dd.append(a);
+      } else {
+        dd.textContent = value || MISSING[LANG];
+      }
       if (!value) dd.classList.add("missing");
       div.append(dt, dd);
       sheet.append(div);

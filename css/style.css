@@ -321,15 +321,15 @@ section{ padding:clamp(70px,12vh,140px) var(--pad); position:relative; }
   font-size:clamp(1.1rem,2.5vw,1.6rem); letter-spacing:.02em;
   font-variant-numeric:tabular-nums;
 }
-.contact-manager, .contact-email{
+.contact-manager, .contact-email, .contact-instagram{
   margin-top:8px; font-size:.92rem; color:rgba(242,240,236,.85);
 }
-.contact-manager span, .contact-email span{
+.contact-manager span, .contact-email span, .contact-instagram span{
   display:inline-block; margin-right:10px;
   font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gris);
 }
-.contact-email a{ color:var(--blanc); border-bottom:1px solid var(--ligne); }
-.contact-email a:hover{ border-color:var(--blanc); }
+.contact-email a, .contact-instagram a{ color:var(--blanc); border-bottom:1px solid var(--ligne); }
+.contact-email a:hover, .contact-instagram a:hover{ border-color:var(--blanc); }
 .contact-actions{
   display:flex; flex-wrap:wrap; gap:14px; margin-top:clamp(26px,4vh,44px);
 }

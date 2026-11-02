@@ -501,18 +501,20 @@ function observeAll() {
     }
     const frame = v.closest(".film-frame");
     if (!frame) return;
-    const sync = () => frame.classList.toggle("is-paused", v.paused);
-    v.addEventListener("play", sync);
-    v.addEventListener("pause", sync);
+    let playing = false;
+    const sync = () => frame.classList.toggle("is-paused", !playing);
+    v.addEventListener("playing", () => { playing = true; sync(); });
+    v.addEventListener("pause", () => { playing = false; sync(); });
+    v.addEventListener("ended", () => { playing = false; sync(); });
     frame.addEventListener("click", () => {
-      if (v.paused) {
+      if (playing) {
+        v.pause();
+      } else {
         if (!v.src && v.dataset.src) {
           v.src = v.dataset.src;
           v.removeAttribute("data-src");
         }
         playMuted(v);
-      } else {
-        v.pause();
       }
     });
     sync();
